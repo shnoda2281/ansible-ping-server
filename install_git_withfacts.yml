@@ -1,0 +1,11 @@
+---
+- name: Install Git (facts enabled)
+  hosts: all
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Ensure git is installed
+      ansible.builtin.package:
+        name: git
+        state: present
