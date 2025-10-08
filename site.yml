@@ -1,24 +1,35 @@
+---
 - hosts: all
   become: true
   gather_facts: yes
 
+  vars:
+    root_dir: /usr/share/nginx/html
+    server_message: "This is server {{ ansible_hostname }}!"
+
   tasks:
-    - name: Ensure nginx installed
+    - name: Install nginx and cowsay
       apt:
-        name: nginx
+        name:
+          - nginx
+          - cowsay
         state: present
         update_cache: yes
 
-    - name: Render index.html into active root
+    - name: Run cowsay with server name
+      command: cowsay "{{ server_message }}"
+      register: cowsay_result
+
+    - name: Render index.html template
       template:
         src: templates/index.html.j2
-        dest: /usr/share/nginx/html/index.html
+        dest: "{{ root_dir }}/index.html"
         owner: www-data
         group: www-data
-        mode: '0644'
+        mode: "0644"
       notify: restart nginx
 
-    - name: Ensure nginx running
+    - name: Ensure nginx is running
       service:
         name: nginx
         state: started
