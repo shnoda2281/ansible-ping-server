@@ -1,0 +1,36 @@
+---
+- name: Bootstrap server for work
+  hosts: all
+  become: true
+
+  vars:
+    work_packages:
+      - git
+      - make
+      - nodejs
+    work_users:
+      - arya
+      - sansa
+      - tirion
+
+  tasks:
+    - name: Update apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+      tags: [update]
+
+    - name: Install work packages
+      ansible.builtin.package:
+        name: "{{ work_packages }}"
+        state: present
+      tags: [packages]
+
+    - name: Ensure users exist
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: present
+        create_home: yes
+      loop: "{{ work_users }}"
+      tags: [users]

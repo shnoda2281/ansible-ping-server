@@ -16,3 +16,23 @@ verify-ad:
 
 ping:
 	ansible all -i inventory.ini -m ping
+
+
+# === новые команды для setup.yml ===
+
+.PHONY: run tags users packages update
+
+run:
+	ansible-playbook -i inventory.ini setup.yml
+
+tags:
+	ansible-playbook -i inventory.ini setup.yml --tags "$(t)"
+
+users:
+	ansible-playbook -i inventory.ini setup.yml --tags users
+
+packages:
+	ansible-playbook -i inventory.ini setup.yml --tags packages
+
+update:
+	ansible-playbook -i inventory.ini setup.yml --tags update
