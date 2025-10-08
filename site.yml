@@ -1,0 +1,31 @@
+- hosts: all
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Ensure nginx installed
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Render index.html into active root
+      template:
+        src: templates/index.html.j2
+        dest: /usr/share/nginx/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      notify: restart nginx
+
+    - name: Ensure nginx running
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
